@@ -83,13 +83,17 @@ export default function VerificationForm() {
         }
     }
 
+    const getCheckIndexById = (formState: Checks, id: string) => formState.findIndex(check => check.id === id)
+
+    const updateCheckSelectedOption = (formState: Checks, checkIndex: number, isYesAnswer: boolean) => { formState[checkIndex].answer = isYesAnswer }
+
     const onOptionBtnClickHandler = useCallback(({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
         const { id } = checkElement
-        const clickedElementIndex = formState.findIndex(check => check.id === id)
+        const clickedElementIndex = getCheckIndexById(formState, id)
         // we copy the formState to avoid mutation
         const updatedFormState = [...formState]
         // update the clicked item to have the answer property
-        updatedFormState[clickedElementIndex].answer = isYesAnswer
+        updateCheckSelectedOption(updatedFormState, clickedElementIndex, isYesAnswer)
         const isNoAnswer = !isYesAnswer
         if (isNoAnswer) {
             // update all the checks after the clicked one to be disabled

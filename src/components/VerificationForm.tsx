@@ -97,8 +97,8 @@ export default function VerificationForm() {
                     const buttonExtraStyle = answer ? buttonStyles.ButtonSelected : ''
                     console.log("ANS", answer)
                     return (
-                        <div key={id} className={verificationFormStyles.ButtonGroupContainer} aria-labelledby={description ?? 'Verification field'}>
-                            <h3>{description}</h3>
+                        <div key={id} className={`${verificationFormStyles.ButtonGroupContainer} ${disabled ? verificationFormStyles.noHighlight : ''}`} aria-labelledby={description ?? 'Verification field'}>
+                            <h3 className={disabled ? verificationFormStyles.disabledText : ''}>{description}</h3>
                             <div className={verificationFormStyles.ButtonGroup}>
                                 <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })} disabled={disabled} classes={answer ? buttonExtraStyle : ''}>Yes</Button>
                                 <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: false })} disabled={disabled} classes={answer ? '' : buttonExtraStyle}>No</Button>

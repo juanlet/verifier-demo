@@ -10,6 +10,10 @@
     border-radius: 6px;
 }
 
+.noHighlight:hover {
+    background-color: transparent;
+}
+
 .formFieldsContainer {
     margin-bottom: 4rem;
 }
@@ -20,4 +24,8 @@
     align-items: center;
     justify-content: center;
     padding: 1rem;
+}
+
+.disabledText {
+    color: #bdc0cf;
 }

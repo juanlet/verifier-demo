@@ -1,3 +1,3 @@
-import { Check } from "./interfaces";
+import { Check } from "./interfaces"
 
 export type Checks = Check[]

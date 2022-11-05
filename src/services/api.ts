@@ -1,5 +1,5 @@
-import { FetchError } from "@/types/interfaces";
-import { Checks } from "@/types/types";
+import { FetchError } from "@/types/interfaces"
+import { Checks } from "@/types/types"
 
 export function fetchChecks(): Promise<Checks | FetchError> {
     return new Promise((resolve, reject) =>
@@ -31,10 +31,8 @@ export function fetchChecks(): Promise<Checks | FetchError> {
                     : reject({ success: false }),
             500
         )
-    );
+    )
 }
-
-
 
 export function submitCheckResults(results: Checks): Promise<Checks | FetchError> {
     return new Promise((resolve, reject) =>
@@ -43,5 +41,5 @@ export function submitCheckResults(results: Checks): Promise<Checks | FetchError
                 Math.random() <= 0.8 ? resolve(results) : reject({ success: false }),
             500
         )
-    );
+    )
 }

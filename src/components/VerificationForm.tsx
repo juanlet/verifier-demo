@@ -26,7 +26,7 @@ export default function VerificationForm() {
     const completeChecksWithStatusFields = (checks: Checks) => {
         const formattedSortedChecks: Checks = []
         checks.forEach((check, index) => {
-            formattedSortedChecks.push({ id: check.id, description: check.description, disabled: index === 0 ? false : true, answer: null, priority: check.priority })
+            formattedSortedChecks.push({ id: check.id, description: check.description, disabled: index === 0, answer: null, priority: check.priority })
         })
 
         setFormState(formattedSortedChecks)
@@ -60,7 +60,6 @@ export default function VerificationForm() {
         try {
             const checkResults = await submitCheckResults(formState)
             isResponseError(checkResults)
-
         } catch (error) {
             console.log("There was an error submitting the check results")
         }
@@ -68,14 +67,14 @@ export default function VerificationForm() {
 
     const disableNextChecks = (formState: Checks, disableStartingIndex: number) => {
         for (let i = disableStartingIndex + 1; i < formState.length; i++) {
-            formState[i]!.disabled = true
-            formState[i]!.answer = null
+            formState[i].disabled = true
+            formState[i].answer = null
         }
     }
 
     const enableNextCheck = (formState: Checks, clickedElementIndex: number) => {
         if (clickedElementIndex + 1 < formState.length) {
-            formState[clickedElementIndex + 1]!.disabled = false
+            formState[clickedElementIndex + 1].disabled = false
         }
     }
 
@@ -85,7 +84,7 @@ export default function VerificationForm() {
         // we copy the formState to avoid mutation
         const updatedFormState = [...formState]
         // update the clicked item to have the answer property
-        updatedFormState[clickedElementIndex]!.answer = isYesAnswer
+        updatedFormState[clickedElementIndex].answer = isYesAnswer
         const isNoAnswer = !isYesAnswer
         if (isNoAnswer) {
             // update all the checks after the clicked one to be disabled
@@ -107,7 +106,7 @@ export default function VerificationForm() {
             <div className={verificationFormStyles.formFieldsContainer}>
                 {formState.map((checkElement) => {
                     // we cast description to these two values, any other value would be a bug
-                    const { id, description, disabled, answer } = checkElement;
+                    const { id, description, disabled, answer } = checkElement
                     // this will determine if the button has the selected style or not
                     console.log("ANS", answer)
                     return (

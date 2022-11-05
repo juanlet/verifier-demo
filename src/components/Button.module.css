@@ -1,15 +1,10 @@
 .Button {
-    font-weight: 500;
     font-size: 1.1rem;
-    line-height: 40px;
     letter-spacing: 0.4px;
-    text-align: center;
-    user-select: none;
     border: 1px solid var(--primary-color);
     background-color: rgb(247, 247, 247);
     color: var(--primary-color);
     min-width: 80px;
-    position: relative;
     height: 40px;
     padding: 0 16px;
     border-radius: 4px;

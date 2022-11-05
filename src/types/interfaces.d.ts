@@ -2,6 +2,8 @@ export interface Check {
     id: string,
     priority: number,
     description: string,
+    disabled?: boolean,
+    answer?: boolean | null
 }
 
 export interface Result {

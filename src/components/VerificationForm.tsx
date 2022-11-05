@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
 import { fetchChecks } from '../services/api'
-import { FetchError } from '../types/interfaces'
+import { Check, FetchError } from '../types/interfaces'
 import { Checks } from '../types/types'
 import Button from './Button'
 import styles from './VerificationForm.module.css'
-
-type VerificationFormState = Map<String, { description: String, answer: String | null, priority: number }>
 
 const sortChecksByPriority = (checks: Checks) => {
     // avoid mutation of the original checks, sort checks by priority in ascending order
@@ -13,33 +11,33 @@ const sortChecksByPriority = (checks: Checks) => {
     return checkCopy.sort((a, b) => a.priority - b.priority)
 }
 
-const isErrorChecksResponse = (checks: Checks | FetchError) => {
+const isFetchError = (checks: Checks | FetchError) => {
     // if success property is present in the response as a key, it means there was an error according to the specification of the given API
     if ('success' in checks) {
         throw new Error()
     }
 }
 
-
 export default function VerificationForm() {
-    const [formState, setFormState] = useState<VerificationFormState | {}>({})
+    const [formState, setFormState] = useState<Checks>(() => [])
     const [error, setError] = useState<string | null>(null)
 
-    const buildFieldMap = (sortedChecks: Checks) => {
-        const generatedFormFieldsMap: VerificationFormState = {} as VerificationFormState
-        for (const check of sortedChecks) {
-            generatedFormFieldsMap.set(check.id, { description: check.description, answer: null, priority: check.priority })
+    const buildFormattedChecks = (checks: Checks) => {
+        const formattedSortedChecks: Checks = []
+        for (const check of checks) {
+            formattedSortedChecks.push({ id: check.id, description: check.description, disabled: true, answer: null, priority: check.priority })
         }
 
-        setFormState(generatedFormFieldsMap)
+        setFormState(formattedSortedChecks)
     }
 
     const fetchInitialVerificationData = async () => {
         try {
             const fetchResult: Checks | FetchError = await fetchChecks()
-            isErrorChecksResponse(fetchResult)
-            const sortedChecks = sortChecksByPriority(fetchResult as Checks)
-            buildFieldMap(sortedChecks)
+            isFetchError(fetchResult)
+            const checks = fetchResult as Checks
+            const sortedChecks = sortChecksByPriority(checks)
+            buildFormattedChecks(sortedChecks)
         } catch {
             setError("There was an error with the service. Please wait a few minutes before you try again.")
         }
@@ -51,7 +49,7 @@ export default function VerificationForm() {
 
     useEffect(() => {
         // this effect is used when there's a fetch error and the user press the retry fetch button
-        if (!error && (formState as VerificationFormState).size) {
+        if (!error && formState.length) {
             fetchInitialVerificationData()
         }
     }, [error])
@@ -61,8 +59,12 @@ export default function VerificationForm() {
         console.log("submit")
     }
 
-    const onOptionBtnClickHandler = () => {
-        console.log("button clicked")
+    const onOptionBtnClickHandler = ({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
+        const { id, answer: currentAnswer } = checkElement
+        if (!currentAnswer) {
+            formState.find(check => check.id === id)!.answer = isYesAnswer
+            return
+        }
     }
 
     if (error) {
@@ -72,20 +74,22 @@ export default function VerificationForm() {
     return (
         <form onSubmit={onSubmitVerificationHandler}>
             <div className={styles.formFieldsContainer}>
-                {Object.keys(formState).map((formFieldName) => {
+                {formState.map((checkElement) => {
+                    // we cast description to these two values, any other value would be a bug
+                    const { id, description } = checkElement;
                     return (
-                        <div key={formFieldName} className={styles.ButtonGroupContainer} aria-label={formFieldName}>
-                            <h3>{formFieldName}</h3>
+                        <div key={id} className={styles.ButtonGroupContainer} aria-labelledBy={description ?? 'Verification field'}>
+                            <h3>{description}</h3>
                             <div className={styles.ButtonGroup}>
-                                <Button type="button" onClick={onOptionBtnClickHandler}>Yes</Button>
-                                <Button type="button" onClick={onOptionBtnClickHandler}>No</Button>
+                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })}>Yes</Button>
+                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: false })}>No</Button>
                             </div>
                         </div>
                     )
                 })}
-            </div>
+            </div >
             <div style={{ textAlign: "end" }}><Button type="submit">Submit</Button></div>
 
-        </form>
+        </form >
     )
 }

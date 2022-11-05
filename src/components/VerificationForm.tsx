@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { fetchChecks } from '../services/api'
 import { Check, FetchError } from '../types/interfaces'
 import { Checks } from '../types/types'
@@ -72,7 +72,7 @@ export default function VerificationForm() {
         }
     }
 
-    const onOptionBtnClickHandler = ({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
+    const onOptionBtnClickHandler = useCallback(({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
         const { id } = checkElement
         const clickedElementIndex = formState.findIndex(check => check.id === id)
         // we copy the formState to avoid mutation
@@ -89,7 +89,7 @@ export default function VerificationForm() {
         }
         // update the formState with the copy of the formState
         setFormState(updatedFormState)
-    }
+    }, [formState])
 
     if (error) {
         return <div className={verificationFormStyles.errorContainer} onClick={() => setError(null)}>{error}<Button disabled={false}>Retry</Button></div>
@@ -102,14 +102,13 @@ export default function VerificationForm() {
                     // we cast description to these two values, any other value would be a bug
                     const { id, description, disabled, answer } = checkElement;
                     // this will determine if the button has the selected style or not
-                    const buttonExtraStyle = answer ? buttonStyles.ButtonSelected : ''
                     console.log("ANS", answer)
                     return (
                         <div key={id} className={`${verificationFormStyles.ButtonGroupContainer} ${disabled ? verificationFormStyles.noHighlight : ''}`} aria-labelledby={description ?? 'Verification field'}>
                             <h3 className={disabled ? verificationFormStyles.disabledText : ''}>{description}</h3>
                             <div className={verificationFormStyles.ButtonGroup}>
-                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })} disabled={disabled} classes={answer ? buttonExtraStyle : ''}>Yes</Button>
-                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: false })} disabled={disabled} classes={answer ? '' : buttonExtraStyle}>No</Button>
+                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })} disabled={disabled} classes={answer ? buttonStyles.ButtonSelected : ''}>Yes</Button>
+                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: false })} disabled={disabled} classes={answer ? '' : answer !== null ? buttonStyles.ButtonSelected : ''}>No</Button>
                             </div>
                         </div>
                     )

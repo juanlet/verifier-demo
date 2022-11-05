@@ -1,7 +1,7 @@
 import styles from "@/components/Button.module.css";
 
 interface ButtonProps {
-    children: string;
+    children: string
     disabled?: boolean
     type?: "button" | "submit" | "reset" | undefined
     onClick?: () => void

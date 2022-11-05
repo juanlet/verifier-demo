@@ -5,6 +5,7 @@ import { Checks } from '@/types/types'
 import Button from '@/components/Button'
 import verificationFormStyles from '@/components/VerificationForm.module.css'
 import buttonStyles from '@/components/Button.module.css'
+import { useNavigate } from 'react-router-dom'
 
 const sortChecksByPriority = (checks: Checks) => {
     // avoid mutation of the original checks, sort checks by priority in ascending order
@@ -21,7 +22,9 @@ const isResponseError = (checks: Checks | FetchError) => {
 
 export default function VerificationForm() {
     const [formState, setFormState] = useState<Checks>(() => [])
-    const [error, setError] = useState<string | null>(null)
+    const [fetchError, setFetchError] = useState<string | null>(null)
+    const [submitError, setSubmitError] = useState<string | null>(null)
+    const navigate = useNavigate()
 
     const completeChecksWithStatusFields = (checks: Checks) => {
         const formattedSortedChecks: Checks = []
@@ -40,7 +43,7 @@ export default function VerificationForm() {
             const sortedChecks = sortChecksByPriority(checks)
             completeChecksWithStatusFields(sortedChecks)
         } catch {
-            setError("There was an error with the service. Please wait a few minutes before you try again.")
+            setFetchError("There was an error with the service. Please wait a few minutes before you try again.")
         }
     }
 
@@ -50,19 +53,20 @@ export default function VerificationForm() {
 
     useEffect(() => {
         // this effect is used when there's a fetch error and the user press the retry fetch button
-        if (!error && formState.length) {
+        if (!fetchError && formState.length) {
             fetchInitialVerificationData()
         }
-    }, [error])
+    }, [fetchError])
 
     const onSubmitVerificationHandler = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
+            setSubmitError(null)
             const checkResults = await submitCheckResults(formState)
             isResponseError(checkResults)
-
+            navigate("/success")
         } catch (error) {
-            console.log("There was an error submitting the check results")
+            setSubmitError("There was an error submitting the check results")
         }
     }
 
@@ -98,8 +102,8 @@ export default function VerificationForm() {
         setFormState(updatedFormState)
     }, [formState])
 
-    if (error) {
-        return <div className={verificationFormStyles.errorContainer} onClick={() => setError(null)}>{error}<Button disabled={false}>Retry</Button></div>
+    if (fetchError) {
+        return <div className={verificationFormStyles.errorContainer} onClick={() => setFetchError(null)}>{fetchError}<Button disabled={false}>Retry</Button></div>
     }
 
     return (
@@ -121,6 +125,7 @@ export default function VerificationForm() {
                     )
                 })}
             </div >
+            {submitError ? <div className={verificationFormStyles.ErrorAlert}>{submitError}</div> : null}
             <div style={{ textAlign: "end" }}><Button type="submit" disabled={!formState.every(field => field.answer === true)}>Submit</Button></div>
 
         </form >

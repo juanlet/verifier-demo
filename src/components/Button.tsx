@@ -10,9 +10,9 @@ interface ButtonProps {
 }
 
 
-const Button = ({ children, disabled = true, type = "button", ...rest }: ButtonProps) => {
+const Button = ({ children, disabled = false, type = "button", classes = '', ...rest }: ButtonProps) => {
     return (
-        <button className={styles.Button} aria-label={children} disabled={disabled} type={type} {...rest}>
+        <button className={`${styles.Button} ${classes}`} aria-labelledby={children} disabled={disabled} type={type} {...rest}>
             {children}
         </button>
     );

@@ -4,7 +4,7 @@ export default function VerifyPage() {
 
     return (
         <div className={styles.container}>
-            <div><h1>Verification form</h1></div>
+            <div><h1>Verification Form</h1></div>
             <VerificationForm />
         </div>
     )

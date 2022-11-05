@@ -3,7 +3,8 @@ import { fetchChecks } from '../services/api'
 import { Check, FetchError } from '../types/interfaces'
 import { Checks } from '../types/types'
 import Button from './Button'
-import styles from './VerificationForm.module.css'
+import verificationFormStyles from './VerificationForm.module.css'
+import buttonStyles from './Button.module.css'
 
 const sortChecksByPriority = (checks: Checks) => {
     // avoid mutation of the original checks, sort checks by priority in ascending order
@@ -24,9 +25,9 @@ export default function VerificationForm() {
 
     const completeChecksWithStatusFields = (checks: Checks) => {
         const formattedSortedChecks: Checks = []
-        for (const check of checks) {
-            formattedSortedChecks.push({ id: check.id, description: check.description, disabled: true, answer: null, priority: check.priority })
-        }
+        checks.forEach((check, index) => {
+            formattedSortedChecks.push({ id: check.id, description: check.description, disabled: index === 0 ? false : true, answer: null, priority: check.priority })
+        })
 
         setFormState(formattedSortedChecks)
     }
@@ -60,29 +61,47 @@ export default function VerificationForm() {
     }
 
     const onOptionBtnClickHandler = ({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
-        const { id, answer: currentAnswer } = checkElement
-        if (!currentAnswer) {
-            formState.find(check => check.id === id)!.answer = isYesAnswer
-            return
+        const { id } = checkElement
+        const clickedElementIndex = formState.findIndex(check => check.id === id)
+        // we copy the formState to avoid mutation
+        const updatedFormState = [...formState]
+        // update the clicked item to have the answer property
+        updatedFormState[clickedElementIndex]!.answer = isYesAnswer
+        const isNoAnswer = !isYesAnswer
+        if (isNoAnswer) {
+            // update all the checks after the clicked one to be disabled
+            for (let i = clickedElementIndex + 1; i < updatedFormState.length; i++) {
+                updatedFormState[i]!.disabled = true
+            }
+        } else {
+            // update the next check to be enabled
+            if (clickedElementIndex + 1 < updatedFormState.length) {
+                updatedFormState[clickedElementIndex + 1]!.disabled = false
+            }
         }
+        // update the formState with the copy of the formState
+        setFormState(updatedFormState)
     }
 
     if (error) {
-        return <div className={styles.errorContainer} onClick={() => setError(null)}>{error}<Button>Retry</Button></div>
+        return <div className={verificationFormStyles.errorContainer} onClick={() => setError(null)}>{error}<Button disabled={false}>Retry</Button></div>
     }
 
     return (
         <form onSubmit={onSubmitVerificationHandler}>
-            <div className={styles.formFieldsContainer}>
+            <div className={verificationFormStyles.formFieldsContainer}>
                 {formState.map((checkElement) => {
                     // we cast description to these two values, any other value would be a bug
-                    const { id, description } = checkElement;
+                    const { id, description, disabled, answer } = checkElement;
+                    // this will determine if the button has the selected style or not
+                    const buttonExtraStyle = answer ? buttonStyles.ButtonSelected : ''
+                    console.log("ANS", answer)
                     return (
-                        <div key={id} className={styles.ButtonGroupContainer} aria-labelledBy={description ?? 'Verification field'}>
+                        <div key={id} className={verificationFormStyles.ButtonGroupContainer} aria-labelledby={description ?? 'Verification field'}>
                             <h3>{description}</h3>
-                            <div className={styles.ButtonGroup}>
-                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })}>Yes</Button>
-                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: false })}>No</Button>
+                            <div className={verificationFormStyles.ButtonGroup}>
+                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })} disabled={disabled} classes={answer ? buttonExtraStyle : ''}>Yes</Button>
+                                <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: false })} disabled={disabled} classes={answer ? '' : buttonExtraStyle}>No</Button>
                             </div>
                         </div>
                     )

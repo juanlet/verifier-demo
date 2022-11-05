@@ -1,0 +1,23 @@
+.ButtonGroupContainer {
+    display: flex;
+    padding: 1rem;
+    flex-direction: column;
+    align-items: left;
+}
+
+.ButtonGroupContainer:hover {
+    background-color: #daf6f6;
+    border-radius: 6px;
+}
+
+.formFieldsContainer {
+    margin-bottom: 4rem;
+}
+
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}

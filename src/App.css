@@ -1,0 +1,11 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.App {
+  font-family: sans-serif;
+  --primary-color: #004e5f;
+  --highlight-color: #def7f7;
+}

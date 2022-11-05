@@ -22,7 +22,7 @@ export default function VerificationForm() {
     const [formState, setFormState] = useState<Checks>(() => [])
     const [error, setError] = useState<string | null>(null)
 
-    const buildFormattedChecks = (checks: Checks) => {
+    const completeChecksWithStatusFields = (checks: Checks) => {
         const formattedSortedChecks: Checks = []
         for (const check of checks) {
             formattedSortedChecks.push({ id: check.id, description: check.description, disabled: true, answer: null, priority: check.priority })
@@ -37,7 +37,7 @@ export default function VerificationForm() {
             isFetchError(fetchResult)
             const checks = fetchResult as Checks
             const sortedChecks = sortChecksByPriority(checks)
-            buildFormattedChecks(sortedChecks)
+            completeChecksWithStatusFields(sortedChecks)
         } catch {
             setError("There was an error with the service. Please wait a few minutes before you try again.")
         }

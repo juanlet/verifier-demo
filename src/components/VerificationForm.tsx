@@ -26,7 +26,7 @@ export default function VerificationForm() {
     const completeChecksWithStatusFields = (checks: Checks) => {
         const formattedSortedChecks: Checks = []
         checks.forEach((check, index) => {
-            formattedSortedChecks.push({ id: check.id, description: check.description, disabled: index === 0, answer: null, priority: check.priority })
+            formattedSortedChecks.push({ id: check.id, description: check.description, disabled: index !== 0, answer: null, priority: check.priority })
         })
 
         setFormState(formattedSortedChecks)
@@ -60,6 +60,7 @@ export default function VerificationForm() {
         try {
             const checkResults = await submitCheckResults(formState)
             isResponseError(checkResults)
+
         } catch (error) {
             console.log("There was an error submitting the check results")
         }

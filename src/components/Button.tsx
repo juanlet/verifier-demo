@@ -1,12 +1,12 @@
-import { ReactElement, SyntheticEvent } from "react";
-import styles from "./Button.module.css";
+import styles from "@/components/Button.module.css";
 
 interface ButtonProps {
     children: string;
     disabled?: boolean
     type?: "button" | "submit" | "reset" | undefined
     onClick?: () => void
-    [x: string]: any;
+    classes?: string
+    [x: string]: any
 }
 
 

@@ -6,14 +6,6 @@ export interface Check {
     answer?: boolean | null
 }
 
-export interface Result {
-    checkId: string
-    result: boolean
-}
-
-export interface Results {
-    results: Result[]
-}
 
 export interface FetchError {
     success: false;

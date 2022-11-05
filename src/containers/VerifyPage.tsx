@@ -1,5 +1,5 @@
-import VerificationForm from "../components/VerificationForm";
-import styles from "./VerifyPage.module.css";
+import VerificationForm from "@/components/VerificationForm";
+import styles from "@/containers/VerifyPage.module.css";
 export default function VerifyPage() {
 
     return (

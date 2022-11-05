@@ -1,5 +1,5 @@
-import './App.css'
-import VerifyPage from './containers/VerifyPage'
+import '@/App.css'
+import VerifyPage from '@/containers/VerifyPage'
 
 function App() {
 

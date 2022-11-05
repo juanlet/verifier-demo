@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchChecks } from '../services/api'
-import { Check, FetchError } from '../types/interfaces'
-import { Checks } from '../types/types'
-import Button from './Button'
-import verificationFormStyles from './VerificationForm.module.css'
-import buttonStyles from './Button.module.css'
+import { fetchChecks, submitCheckResults } from '@/services/api'
+import { Check, FetchError } from '@/types/interfaces'
+import { Checks } from '@/types/types'
+import Button from '@/components/Button'
+import verificationFormStyles from '@/components/VerificationForm.module.css'
+import buttonStyles from '@/components/Button.module.css'
 
 const sortChecksByPriority = (checks: Checks) => {
     // avoid mutation of the original checks, sort checks by priority in ascending order
@@ -12,7 +12,7 @@ const sortChecksByPriority = (checks: Checks) => {
     return checkCopy.sort((a, b) => a.priority - b.priority)
 }
 
-const isFetchError = (checks: Checks | FetchError) => {
+const isResponseError = (checks: Checks | FetchError) => {
     // if success property is present in the response as a key, it means there was an error according to the specification of the given API
     if ('success' in checks) {
         throw new Error()
@@ -35,7 +35,7 @@ export default function VerificationForm() {
     const fetchInitialVerificationData = async () => {
         try {
             const fetchResult: Checks | FetchError = await fetchChecks()
-            isFetchError(fetchResult)
+            isResponseError(fetchResult)
             const checks = fetchResult as Checks
             const sortedChecks = sortChecksByPriority(checks)
             completeChecksWithStatusFields(sortedChecks)
@@ -55,9 +55,15 @@ export default function VerificationForm() {
         }
     }, [error])
 
-    const onSubmitVerificationHandler = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmitVerificationHandler = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        console.log("submit")
+        try {
+            const checkResults = await submitCheckResults(formState)
+            isResponseError(checkResults)
+
+        } catch (error) {
+            console.log("There was an error submitting the check results")
+        }
     }
 
     const disableNextChecks = (formState: Checks, disableStartingIndex: number) => {

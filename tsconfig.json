@@ -2,7 +2,10 @@
   "compilerOptions": {
     // 👇️ set jsx to react-jsx
     "jsx": "react-jsx",
-    "target": "es6",
+    "target": "ES5",
+    "types": [
+      "vite/client"
+    ],
     "lib": [
       "dom",
       "dom.iterable",
@@ -19,7 +22,14 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "sourceMap": true,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "baseUrl": "."
   },
   "include": [
     "src",

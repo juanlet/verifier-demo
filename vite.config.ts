@@ -8,5 +8,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom'
-  }
+  }, css: {
+    devSourcemap: true,
+  },
+  resolve: {
+    alias: [{ find: '@', replacement: '/src' }],
+  },
 })

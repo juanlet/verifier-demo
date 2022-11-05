@@ -1,5 +1,5 @@
-import { FetchError, Results } from "../types/interfaces";
-import { Checks } from "../types/types";
+import { FetchError } from "@/types/interfaces";
+import { Checks } from "@/types/types";
 
 export function fetchChecks(): Promise<Checks | FetchError> {
     return new Promise((resolve, reject) =>
@@ -36,7 +36,7 @@ export function fetchChecks(): Promise<Checks | FetchError> {
 
 
 
-export function submitCheckResults(results: Results): Promise<Results | FetchError> {
+export function submitCheckResults(results: Checks): Promise<Checks | FetchError> {
     return new Promise((resolve, reject) =>
         setTimeout(
             () =>

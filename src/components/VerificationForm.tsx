@@ -60,6 +60,18 @@ export default function VerificationForm() {
         console.log("submit")
     }
 
+    const disableNextChecks = (formState: Checks, disableStartingIndex: number) => {
+        for (let i = disableStartingIndex + 1; i < formState.length; i++) {
+            formState[i]!.disabled = true
+        }
+    }
+
+    const enableNextCheck = (formState: Checks, clickedElementIndex: number) => {
+        if (clickedElementIndex + 1 < formState.length) {
+            formState[clickedElementIndex + 1]!.disabled = false
+        }
+    }
+
     const onOptionBtnClickHandler = ({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
         const { id } = checkElement
         const clickedElementIndex = formState.findIndex(check => check.id === id)
@@ -70,14 +82,10 @@ export default function VerificationForm() {
         const isNoAnswer = !isYesAnswer
         if (isNoAnswer) {
             // update all the checks after the clicked one to be disabled
-            for (let i = clickedElementIndex + 1; i < updatedFormState.length; i++) {
-                updatedFormState[i]!.disabled = true
-            }
+            disableNextChecks(updatedFormState, clickedElementIndex)
         } else {
             // update the next check to be enabled
-            if (clickedElementIndex + 1 < updatedFormState.length) {
-                updatedFormState[clickedElementIndex + 1]!.disabled = false
-            }
+            enableNextCheck(updatedFormState, clickedElementIndex)
         }
         // update the formState with the copy of the formState
         setFormState(updatedFormState)

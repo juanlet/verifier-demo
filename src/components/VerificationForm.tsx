@@ -115,7 +115,7 @@ export default function VerificationForm() {
                     )
                 })}
             </div >
-            <div style={{ textAlign: "end" }}><Button type="submit">Submit</Button></div>
+            <div style={{ textAlign: "end" }}><Button type="submit" disabled={!formState.every(field => field.answer === true)}>Submit</Button></div>
 
         </form >
     )

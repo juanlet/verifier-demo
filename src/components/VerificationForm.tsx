@@ -63,6 +63,7 @@ export default function VerificationForm() {
     const disableNextChecks = (formState: Checks, disableStartingIndex: number) => {
         for (let i = disableStartingIndex + 1; i < formState.length; i++) {
             formState[i]!.disabled = true
+            formState[i]!.answer = null
         }
     }
 

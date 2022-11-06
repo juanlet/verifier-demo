@@ -18,5 +18,6 @@ export default defineConfig({
   },
   resolve: {
     alias: [{ find: '@', replacement: '/src' }]
-  }
+  },
+  base: '/verifications-demo/'
 })

@@ -18,6 +18,6 @@ git add -A
 git commit -m 'deploy'
 
 
-git push -f git@github.com:juanlet/verifications-demo.git main:gh-pages
+git push -f git@github.com:juanlet/verifier-demo.git main:gh-pages
 
 cd -

@@ -1,5 +1,5 @@
 import styles from "@/components/Button.module.css";
-
+import "@/components/Button.module.css"
 interface ButtonProps {
     children: string
     disabled?: boolean

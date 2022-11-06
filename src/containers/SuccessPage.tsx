@@ -1,5 +1,6 @@
 import Button from "@/components/Button"
 import styles from "@/containers/SuccessPage.module.css"
+import '@/containers/SuccessPage.module.css'
 import { useNavigate } from "react-router-dom"
 export default function SuccessPage() {
     const navigate = useNavigate()

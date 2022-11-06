@@ -21,10 +21,10 @@ export const getCheckIndexById = (checks: Checks, id: string) => checks.findInde
 
 export const areAllAnswersYes = (checks: Checks) => checks.length > 0 && checks.every(field => field.answer === true)
 
-export const haveAtLeastOneNoAnswer = (checks: Checks) => checks.length > 0 && !checks.some(field => field.answer === false)
+export const haveAtLeastOneNoAnswer = (checks: Checks) => checks.length > 0 && checks.some(field => field.answer === false)
 
 export const isSubmitDisabled = (checks: Checks) => {
-    const disableSubmit = !areAllAnswersYes(checks) && haveAtLeastOneNoAnswer(checks)
+    const disableSubmit = !areAllAnswersYes(checks) && !haveAtLeastOneNoAnswer(checks)
     return disableSubmit
 }
 

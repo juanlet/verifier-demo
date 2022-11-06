@@ -5,7 +5,7 @@ export function fetchChecks(): Promise<Checks | FetchError> {
     return new Promise((resolve, reject) =>
         setTimeout(
             () =>
-                Math.random() <= 0.8
+                Math.random() <= 0.99
                     ? resolve([
                         {
                             id: "aaa",
@@ -42,4 +42,11 @@ export function submitCheckResults(results: Checks): Promise<Checks | FetchError
             500
         )
     )
+}
+
+export const isResponseError = (checks: Checks | FetchError) => {
+    // if success property is present in the response as a key, it means there was an error according to the specification of the given API
+    if ('success' in checks) {
+        throw new Error()
+    }
 }

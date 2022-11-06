@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import { fetchChecks, submitCheckResults } from '@/services/api'
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react'
+import { fetchChecks, isResponseError, submitCheckResults } from '@/services/api'
 import { Check, FetchError } from '@/types/interfaces'
 import { Checks } from '@/types/types'
 import Button from '@/components/Button'
@@ -8,54 +8,52 @@ import buttonStyles from '@/components/Button.module.css'
 import { useNavigate } from 'react-router-dom'
 import { useKey } from 'react-use'
 
-const sortChecksByPriority = (checks: Checks) => {
-    // avoid mutation of the original checks, sort checks by priority in ascending order
-    const checkCopy = [...checks]
-    return checkCopy.sort((a, b) => a.priority - b.priority)
-}
-
-const isResponseError = (checks: Checks | FetchError) => {
-    // if success property is present in the response as a key, it means there was an error according to the specification of the given API
-    if ('success' in checks) {
-        throw new Error()
-    }
-}
-
 export default function VerificationForm() {
     const [checks, setChecks] = useState<Checks>(() => [])
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [submitError, setSubmitError] = useState<string | null>(null)
+    const [activeCheckIndex, setActiveCheckIndex] = useState<number>(0)
+    // list of refs to navigate through the checks and show the active check
     const navigate = useNavigate()
 
-    const moveCursorDown = useCallback(() => {
+    const moveCursorUp = (e: SyntheticEvent) => {
+        e.preventDefault()
+        console.log("Hey", activeCheckIndex)
+        if (activeCheckIndex - 1 >= 0) {
+            console.log(activeCheckIndex - 1)
+            setActiveCheckIndex(activeCheckIndex => activeCheckIndex - 1)
+        }
+    }
 
-    }, [])
-
-    const moveCursorUp = useCallback(() => {
-
-    }, [])
+    const moveCursorDown = (e: SyntheticEvent) => {
+        e.preventDefault()
+        const lastCheckIndex = checks.length - 1
+        if (activeCheckIndex + 1 <= lastCheckIndex && !checks[activeCheckIndex + 1].disabled) {
+            setActiveCheckIndex(activeCheckIndex => activeCheckIndex + 1)
+        }
+    }
 
     const getLastActiveCheckIndex = (checks: Checks) => checks.findIndex(check => !check.disabled)
 
-    const moveCursorToOption = useCallback((checks: Checks, selectedOption: string) => {
+    const moveCursorToYesNoOption = (checks: Checks, selectedOption: string) => {
         // create a copy of checks array
         const checksCopy = [...checks]
         // select yes option for the last enabled element
-        const lastEnabledElementIndex = getLastActiveCheckIndex(checksCopy)
-        checksCopy[lastEnabledElementIndex].answer = selectedOption === "yes"
+        //const lastEnabledElementIndex = getLastActiveCheckIndex(checksCopy)
+        checksCopy[activeCheckIndex].answer = selectedOption === "yes"
         setChecks(checksCopy)
         if (selectedOption === "yes") {
-            enableNextCheck(checksCopy, lastEnabledElementIndex)
+            enableNextCheck(checksCopy, activeCheckIndex)
         } else {
-            disableNextChecks(checksCopy, lastEnabledElementIndex)
+            disableNextChecks(checksCopy, activeCheckIndex)
         }
-    }, [])
+    }
 
-    // setting key listeners for up, down, yes and no
-    useKey('ArrowUp', moveCursorUp)
-    useKey('ArrowDown', moveCursorDown)
-    useKey('1', () => moveCursorToOption(checks, "yes"), {}, [checks])
-    useKey('2', () => moveCursorToOption(checks, "no"), {}, [checks])
+    // setting key listeners for up, down, yes and no to navigate through the checks
+    useKey('ArrowUp', moveCursorUp, {}, [activeCheckIndex])
+    useKey('ArrowDown', moveCursorDown, {}, [activeCheckIndex])
+    useKey('1', () => moveCursorToYesNoOption(checks, "yes"), {}, [checks, activeCheckIndex])
+    useKey('2', () => moveCursorToYesNoOption(checks, "no"), {}, [checks, activeCheckIndex])
 
     const completeChecksWithStatusFields = (checks: Checks) => {
         const formattedSortedChecks: Checks = []
@@ -64,6 +62,12 @@ export default function VerificationForm() {
         })
 
         setChecks(formattedSortedChecks)
+    }
+
+    const sortChecksByPriority = (checks: Checks) => {
+        // avoid mutation of the original checks, sort checks by priority in ascending order
+        const checkCopy = [...checks]
+        return checkCopy.sort((a, b) => a.priority - b.priority)
     }
 
     const fetchInitialVerificationData = async () => {
@@ -106,19 +110,25 @@ export default function VerificationForm() {
             checks[i].disabled = true
             checks[i].answer = null
         }
+
+        setActiveCheckIndex(disableStartingIndex)
     }
 
     const enableNextCheck = (checks: Checks, checkIndex: number) => {
         if (checkIndex + 1 < checks.length) {
             checks[checkIndex + 1].disabled = false
+            setActiveCheckIndex(activeCheckIdx => activeCheckIdx + 1)
         }
     }
 
     const getCheckIndexById = (checks: Checks, id: string) => checks.findIndex(check => check.id === id)
 
-    const updateCheckSelectedOption = (checks: Checks, checkIndex: number, isYesAnswer: boolean) => { checks[checkIndex].answer = isYesAnswer }
+    const updateCheckSelectedOption = (checks: Checks, checkIndex: number, isYesAnswer: boolean) => {
+        checks[checkIndex].answer = isYesAnswer
+        setActiveCheckIndex(checkIndex)
+    }
 
-    const onOptionBtnClickHandler = useCallback(({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
+    const onOptionBtnClickHandler = ({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
         const { id } = checkElement
         const clickedElementIndex = getCheckIndexById(checks, id)
         // we copy the checks to avoid mutation
@@ -135,7 +145,7 @@ export default function VerificationForm() {
         }
         // update the checks with the copy of the checks
         setChecks(updatedChecksState)
-    }, [checks])
+    }
 
     if (fetchError) {
         return <div className={verificationFormStyles.errorContainer} onClick={() => setFetchError(null)}>{fetchError}<Button disabled={false}>Retry</Button></div>
@@ -144,12 +154,12 @@ export default function VerificationForm() {
     return (
         <form onSubmit={onSubmitVerificationHandler}>
             <div className={verificationFormStyles.formFieldsContainer}>
-                {checks.map((checkElement) => {
+                {checks.map((checkElement, idx) => {
                     // we cast description to these two values, any other value would be a bug
                     const { id, description, disabled, answer } = checkElement
                     // this will determine if the button has the selected style or not
                     return (
-                        <div key={id} className={`${verificationFormStyles.ButtonGroupContainer} ${disabled ? verificationFormStyles.noHighlight : ''}`} aria-labelledby={description ?? 'Verification field'}>
+                        <div key={id} className={`${verificationFormStyles.ButtonGroupContainer} ${disabled ? verificationFormStyles.noHighlight : ''} ${idx === activeCheckIndex && !disabled ? verificationFormStyles.active : ''}`} aria-labelledby={description ?? 'Verification field'}>
                             <h3 className={disabled ? verificationFormStyles.disabledText : ''}>{description}</h3>
                             <div className={verificationFormStyles.ButtonGroup}>
                                 <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })} disabled={disabled} classes={answer ? buttonStyles.ButtonSelected : ''}>Yes</Button>

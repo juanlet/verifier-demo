@@ -1,4 +1,4 @@
-import { SyntheticEvent, useCallback, useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import { fetchChecks, isResponseError, submitCheckResults } from '@/services/api'
 import { Check, FetchError } from '@/types/interfaces'
 import { Checks, UseStateNumberType } from '@/types/types'
@@ -8,6 +8,8 @@ import buttonStyles from '@/components/Button.module.css'
 import { useNavigate } from 'react-router-dom'
 import { useKey } from 'react-use'
 
+/* extracted functions from component and exported them and injected the dependencies 
+for these to be easily testable, I left them here to be closer to the code but they can be put in a utils file if needed */
 export const disableNextChecks = (setActiveCheckIndex: UseStateNumberType, checks: Checks, disableStartingIndex: number) => {
     for (let i = disableStartingIndex + 1; i < checks.length; i++) {
         checks[i].disabled = true
@@ -23,6 +25,21 @@ export const enableNextCheck = (setActiveCheckIndex: UseStateNumberType, checks:
         setActiveCheckIndex(activeCheckIdx => activeCheckIdx + 1)
     }
 }
+
+export const isSubmitDisabled = (checks: Checks) => {
+    const allAnswersYes = checks.every(field => field.answer === true)
+    const atLeastOneNoAnswer = !checks.some(field => field.answer === false && field.answer !== null)
+    const disableSubmit = !allAnswersYes && atLeastOneNoAnswer
+    return disableSubmit
+}
+
+export const sortChecksByPriority = (checks: Checks) => {
+    // avoid mutation of the original checks, sort checks by priority in ascending order
+    const checkCopy = [...checks]
+    return checkCopy.sort((a, b) => a.priority - b.priority)
+}
+
+const getCheckIndexById = (checks: Checks, id: string) => checks.findIndex(check => check.id === id)
 
 export default function VerificationForm() {
     const [checks, setChecks] = useState<Checks>(() => [])
@@ -56,9 +73,9 @@ export default function VerificationForm() {
         checksCopy[activeCheckIndex].answer = selectedOption === "yes"
         setChecks(checksCopy)
         if (selectedOption === "yes") {
-            enableNextCheckMem(setActiveCheckIndex, checksCopy, activeCheckIndex)
+            enableNextCheck(setActiveCheckIndex, checksCopy, activeCheckIndex)
         } else {
-            disableNextChecksMem(setActiveCheckIndex, checksCopy, activeCheckIndex)
+            disableNextChecks(setActiveCheckIndex, checksCopy, activeCheckIndex)
         }
     }
 
@@ -81,12 +98,6 @@ export default function VerificationForm() {
             formattedSortedChecks.push(formattedCheck)
         })
         setChecks(formattedSortedChecks)
-    }
-
-    const sortChecksByPriority = (checks: Checks) => {
-        // avoid mutation of the original checks, sort checks by priority in ascending order
-        const checkCopy = [...checks]
-        return checkCopy.sort((a, b) => a.priority - b.priority)
     }
 
     const fetchInitialVerificationData = async () => {
@@ -112,11 +123,6 @@ export default function VerificationForm() {
         }
     }, [fetchError])
 
-    const disableNextChecksMem = useCallback(disableNextChecks, [])
-
-    const enableNextCheckMem = useCallback(enableNextCheck, [])
-
-    const getCheckIndexById = (checks: Checks, id: string) => checks.findIndex(check => check.id === id)
 
     const updateCheckSelectedOption = (checks: Checks, checkIndex: number, isYesAnswer: boolean) => {
         checks[checkIndex].answer = isYesAnswer
@@ -134,10 +140,10 @@ export default function VerificationForm() {
         const isNoAnswer = !isYesAnswer
         if (isNoAnswer) {
             // update all the checks after the clicked one to be disabled
-            disableNextChecksMem(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
+            disableNextChecks(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
         } else {
             // update the next check to be enabled
-            enableNextCheckMem(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
+            enableNextCheck(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
         }
         // update the checks with the copy of the checks
         setChecks(updatedChecksState)
@@ -145,13 +151,6 @@ export default function VerificationForm() {
 
     if (fetchError) {
         return <div className={verificationFormStyles.errorContainer} onClick={() => setFetchError(null)}>{fetchError}<Button disabled={false}>Retry</Button></div>
-    }
-
-    const isSubmitDisabled = (checks: Checks) => {
-        const allAnswersYes = checks.every(field => field.answer === true)
-        const atLeastOneNoAnswer = !checks.some(field => field.answer === false && field.answer !== null)
-        const disableSubmit = !allAnswersYes && atLeastOneNoAnswer
-        return disableSubmit
     }
 
     const onSubmitVerificationHandler = async (e: React.FormEvent<HTMLFormElement>) => {

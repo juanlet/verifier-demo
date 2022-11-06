@@ -1,12 +1,28 @@
 import { SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { fetchChecks, isResponseError, submitCheckResults } from '@/services/api'
 import { Check, FetchError } from '@/types/interfaces'
-import { Checks } from '@/types/types'
+import { Checks, UseStateNumberType } from '@/types/types'
 import Button from '@/components/Button'
 import verificationFormStyles from '@/components/VerificationForm.module.css'
 import buttonStyles from '@/components/Button.module.css'
 import { useNavigate } from 'react-router-dom'
 import { useKey } from 'react-use'
+
+export const disableNextChecks = (setActiveCheckIndex: UseStateNumberType, checks: Checks, disableStartingIndex: number) => {
+    for (let i = disableStartingIndex + 1; i < checks.length; i++) {
+        checks[i].disabled = true
+        checks[i].answer = null
+    }
+
+    setActiveCheckIndex(disableStartingIndex)
+}
+
+export const enableNextCheck = (setActiveCheckIndex: UseStateNumberType, checks: Checks, checkIndex: number) => {
+    if (checkIndex + 1 < checks.length) {
+        checks[checkIndex + 1].disabled = false
+        setActiveCheckIndex(activeCheckIdx => activeCheckIdx + 1)
+    }
+}
 
 export default function VerificationForm() {
     const [checks, setChecks] = useState<Checks>(() => [])
@@ -40,9 +56,9 @@ export default function VerificationForm() {
         checksCopy[activeCheckIndex].answer = selectedOption === "yes"
         setChecks(checksCopy)
         if (selectedOption === "yes") {
-            enableNextCheck(checksCopy, activeCheckIndex)
+            enableNextCheckMem(setActiveCheckIndex, checksCopy, activeCheckIndex)
         } else {
-            disableNextChecks(checksCopy, activeCheckIndex)
+            disableNextChecksMem(setActiveCheckIndex, checksCopy, activeCheckIndex)
         }
     }
 
@@ -52,7 +68,7 @@ export default function VerificationForm() {
     useKey('1', () => moveCursorToYesNoOption(checks, "yes"), {}, [checks, activeCheckIndex])
     useKey('2', () => moveCursorToYesNoOption(checks, "no"), {}, [checks, activeCheckIndex])
 
-    const completeChecksWithStatusFields = (checks: Checks) => {
+    const formatRawCheckItems = (checks: Checks) => {
         const formattedSortedChecks: Checks = []
         checks.forEach((check, index) => {
             const formattedCheck = {
@@ -79,7 +95,7 @@ export default function VerificationForm() {
             isResponseError(fetchResult)
             const checks = fetchResult as Checks
             const sortedChecks = sortChecksByPriority(checks)
-            completeChecksWithStatusFields(sortedChecks)
+            formatRawCheckItems(sortedChecks)
         } catch {
             setFetchError("There was an error with the service. Please wait a few minutes before you try again.")
         }
@@ -96,33 +112,9 @@ export default function VerificationForm() {
         }
     }, [fetchError])
 
-    const onSubmitVerificationHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        try {
-            setSubmitError(null)
-            const checkResults = await submitCheckResults(checks)
-            isResponseError(checkResults)
-            navigate("/success")
-        } catch (error) {
-            setSubmitError("There was an error submitting the check results")
-        }
-    }
+    const disableNextChecksMem = useCallback(disableNextChecks, [])
 
-    const disableNextChecks = (checks: Checks, disableStartingIndex: number) => {
-        for (let i = disableStartingIndex + 1; i < checks.length; i++) {
-            checks[i].disabled = true
-            checks[i].answer = null
-        }
-
-        setActiveCheckIndex(disableStartingIndex)
-    }
-
-    const enableNextCheck = (checks: Checks, checkIndex: number) => {
-        if (checkIndex + 1 < checks.length) {
-            checks[checkIndex + 1].disabled = false
-            setActiveCheckIndex(activeCheckIdx => activeCheckIdx + 1)
-        }
-    }
+    const enableNextCheckMem = useCallback(enableNextCheck, [])
 
     const getCheckIndexById = (checks: Checks, id: string) => checks.findIndex(check => check.id === id)
 
@@ -142,10 +134,10 @@ export default function VerificationForm() {
         const isNoAnswer = !isYesAnswer
         if (isNoAnswer) {
             // update all the checks after the clicked one to be disabled
-            disableNextChecks(updatedChecksState, clickedElementIndex)
+            disableNextChecksMem(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
         } else {
             // update the next check to be enabled
-            enableNextCheck(updatedChecksState, clickedElementIndex)
+            enableNextCheckMem(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
         }
         // update the checks with the copy of the checks
         setChecks(updatedChecksState)
@@ -160,6 +152,18 @@ export default function VerificationForm() {
         const atLeastOneNoAnswer = !checks.some(field => field.answer === false && field.answer !== null)
         const disableSubmit = !allAnswersYes && atLeastOneNoAnswer
         return disableSubmit
+    }
+
+    const onSubmitVerificationHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        try {
+            setSubmitError(null)
+            const checkResults = await submitCheckResults(checks)
+            isResponseError(checkResults)
+            navigate("/success")
+        } catch (error) {
+            setSubmitError("There was an error submitting the check results")
+        }
     }
 
     return (

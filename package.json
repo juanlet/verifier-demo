@@ -14,14 +14,14 @@
     "test:e2e": "cypress run --headed --browser chrome"
   },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "gh-pages": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.4.3",
     "react-use": "^17.4.0"
   },
   "devDependencies": {
+    "gh-pages": "^4.0.0",
+    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",

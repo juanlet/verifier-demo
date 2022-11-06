@@ -1,5 +1,4 @@
 import { areAllAnswersYes, formatRawCheckItems, getCheckIndexById, haveAtLeastOneNoAnswer, isSubmitDisabled, sortChecksByPriority } from "@/components/VerificationForm"
-import { isResponseError } from "@/services/api"
 import { describe, expect, it } from "vitest"
 
 describe('verification form', () => {
@@ -430,6 +429,50 @@ describe('verification form', () => {
             const expected = true
             const isDisabled = isSubmitDisabled(checks)
             expect(isDisabled).toEqual(expected)
+        })
+    })
+
+    describe('formatRawCheckItems: Format Raw Check Items', () => {
+        it('formatRawCheckItems should return formatted check items', () => {
+            const rawChecks = [
+                {
+                    id: "ddd",
+                    priority: 3,
+                    description: "Document data is clearly visible",
+                    answer: true
+                },
+                {
+                    id: "bbb",
+                    priority: 5,
+                    description: "Veriff supports presented document",
+                    answer: false
+                }]
+
+            const expected = [
+                {
+                    id: "ddd",
+                    priority: 3,
+                    description: "Document data is clearly visible",
+                    disabled: false,
+                    answer: null
+                },
+                {
+                    id: "bbb",
+                    priority: 5,
+                    disabled: true,
+                    description: "Veriff supports presented document",
+                    answer: null
+                }]
+
+            const formattedChecks = formatRawCheckItems(rawChecks)
+            expect(formattedChecks).toEqual(expected)
+        })
+
+        it('formatRawCheckItems should return empty array if raw checks is empty', () => {
+            const rawChecks: any[] = []
+            const expected: any[] = []
+            const formattedChecks = formatRawCheckItems(rawChecks)
+            expect(formattedChecks).toEqual(expected)
         })
     })
 })

@@ -33,13 +33,9 @@ export default function VerificationForm() {
         }
     }
 
-    const getLastActiveCheckIndex = (checks: Checks) => checks.findIndex(check => !check.disabled)
-
     const moveCursorToYesNoOption = (checks: Checks, selectedOption: string) => {
         // create a copy of checks array
         const checksCopy = [...checks]
-        // select yes option for the last enabled element
-        //const lastEnabledElementIndex = getLastActiveCheckIndex(checksCopy)
         checksCopy[activeCheckIndex].answer = selectedOption === "yes"
         setChecks(checksCopy)
         if (selectedOption === "yes") {
@@ -60,7 +56,6 @@ export default function VerificationForm() {
         checks.forEach((check, index) => {
             formattedSortedChecks.push({ id: check.id, description: check.description, disabled: index !== 0, answer: null, priority: check.priority })
         })
-
         setChecks(formattedSortedChecks)
     }
 
@@ -158,8 +153,13 @@ export default function VerificationForm() {
                     // we cast description to these two values, any other value would be a bug
                     const { id, description, disabled, answer } = checkElement
                     // this will determine if the button has the selected style or not
+                    const removeHoverOnDisabled = `${disabled ? verificationFormStyles.noHighlight : ''}`
+                    const activeClass = idx === activeCheckIndex && !disabled ? verificationFormStyles.active : ''
+                    const classes = `${verificationFormStyles.ButtonGroupContainer} 
+                                     ${removeHoverOnDisabled}
+                                     ${activeClass}`
                     return (
-                        <div key={id} className={`${verificationFormStyles.ButtonGroupContainer} ${disabled ? verificationFormStyles.noHighlight : ''} ${idx === activeCheckIndex && !disabled ? verificationFormStyles.active : ''}`} aria-labelledby={description ?? 'Verification field'}>
+                        <div key={id} className={classes} aria-labelledby={description ?? 'Verification field'}>
                             <h3 className={disabled ? verificationFormStyles.disabledText : ''}>{description}</h3>
                             <div className={verificationFormStyles.ButtonGroup}>
                                 <Button type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })} disabled={disabled} classes={answer ? buttonStyles.ButtonSelected : ''}>Yes</Button>

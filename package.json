@@ -2,11 +2,10 @@
   "name": "validations",
   "private": false,
   "version": "1.0.0",
-  "homepage": "https://juanlet.github.io/verifier-demo",
+  "homepage": "https://63677a5f0ff40800094bc7f3--deluxe-truffle-9efdb2.netlify.app/",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "deploy": "gh-pages -d dist",
     "preview": "vite preview",
     "test": "NODE_ENV=test vitest --coverage",
     "lint": "eslint .",

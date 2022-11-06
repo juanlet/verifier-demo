@@ -3,7 +3,7 @@
 This form validates from highest priority to lowest different requirements. The user needs to fullfil all of them for identity validation.
 # Live Demo
 
-https://juanlet.github.io/verifier-demo/
+https://63677a5f0ff40800094bc7f3--deluxe-truffle-9efdb2.netlify.app/
 
 # Run development server
 
@@ -51,10 +51,8 @@ npm run build
 
 Output files will be placed at **dist** directory(root level). Those files can be deployed to a cloud service of your choice. This build produces ES5 javascript code intentionally to give support to older browsers, and in that way, increase the reach of the application.
 
-# Deploy to Github Pages
+# Deploy to Netlify
 
-```
-npm run deploy
-```
+Everytime a change gets pushed through git, netlify will detect the change, rebuild and publish it to 
 
-To aim to another repository change the git push command in **deploy.sh** file to point to the github repository where you won't to deploy this react application
+https://63677a5f0ff40800094bc7f3--deluxe-truffle-9efdb2.netlify.app/

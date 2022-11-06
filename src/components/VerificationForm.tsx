@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useState } from 'react'
+import { SyntheticEvent, useCallback, useEffect, useState } from 'react'
 import { fetchChecks, isResponseError, submitCheckResults } from '@/services/api'
 import { Check, FetchError } from '@/types/interfaces'
 import { Checks, UseStateNumberType } from '@/types/types'
@@ -8,8 +8,8 @@ import buttonStyles from '@/components/Button.module.css'
 import { useNavigate } from 'react-router-dom'
 import { useKey } from 'react-use'
 
-/* extracted functions from component and exported them and injected the dependencies 
-for these to be easily testable, I left them here to be closer to the code but they can be put in a utils file if needed */
+/* extracted functions from component and exported them and injected the dependencies
+for these to be easily testable. I left them here to be closer to the code but they can be put in a utils file if needed */
 export const disableNextChecks = (setActiveCheckIndex: UseStateNumberType, checks: Checks, disableStartingIndex: number) => {
     for (let i = disableStartingIndex + 1; i < checks.length; i++) {
         checks[i].disabled = true
@@ -39,7 +39,7 @@ export const sortChecksByPriority = (checks: Checks) => {
     return checkCopy.sort((a, b) => a.priority - b.priority)
 }
 
-const getCheckIndexById = (checks: Checks, id: string) => checks.findIndex(check => check.id === id)
+export const getCheckIndexById = (checks: Checks, id: string) => checks.findIndex(check => check.id === id)
 
 export default function VerificationForm() {
     const [checks, setChecks] = useState<Checks>(() => [])

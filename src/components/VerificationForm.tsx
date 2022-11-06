@@ -43,20 +43,21 @@ export const formatRawCheckItems = (checks: Checks) => {
     return formattedSortedChecks
 }
 
-export const disableNextChecks = (setActiveCheckIndex: UseStateNumberType, checks: Checks, disableStartingIndex: number) => {
+export const disableFollowingCheckIndexes = (checks: Checks, disableStartingIndex: number) => {
     for (let i = disableStartingIndex + 1; i < checks.length; i++) {
         checks[i].disabled = true
         checks[i].answer = null
     }
 
-    setActiveCheckIndex(disableStartingIndex)
+    return checks
 }
 
-export const enableNextCheck = (setActiveCheckIndex: UseStateNumberType, checks: Checks, checkIndex: number) => {
+export const enableNextCheck = (checks: Checks, checkIndex: number) => {
     if (checkIndex + 1 < checks.length) {
         checks[checkIndex + 1].disabled = false
-        setActiveCheckIndex(activeCheckIdx => activeCheckIdx + 1)
     }
+
+    return checks
 }
 
 export default function VerificationForm() {
@@ -91,9 +92,11 @@ export default function VerificationForm() {
         checksCopy[activeCheckIndex].answer = selectedOption === "yes"
         setChecks(checksCopy)
         if (selectedOption === "yes") {
-            enableNextCheck(setActiveCheckIndex, checksCopy, activeCheckIndex)
+            enableNextCheck(checksCopy, activeCheckIndex)
+            setActiveCheckIndex(activeCheckIdx => activeCheckIdx + 1)
         } else {
-            disableNextChecks(setActiveCheckIndex, checksCopy, activeCheckIndex)
+            disableFollowingCheckIndexes(checksCopy, activeCheckIndex)
+            setActiveCheckIndex(activeCheckIndex)
         }
     }
 
@@ -145,10 +148,12 @@ export default function VerificationForm() {
         const isNoAnswer = !isYesAnswer
         if (isNoAnswer) {
             // update all the checks after the clicked one to be disabled
-            disableNextChecks(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
+            disableFollowingCheckIndexes(updatedChecksState, clickedElementIndex)
+            setActiveCheckIndex(clickedElementIndex)
         } else {
             // update the next check to be enabled
-            enableNextCheck(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
+            enableNextCheck(updatedChecksState, clickedElementIndex)
+            setActiveCheckIndex(activeCheckIdx => activeCheckIdx + 1)
         }
         // update the checks with the copy of the checks
         setChecks(updatedChecksState)

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.02% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>189/201</span>
+                <span class='fraction'>206/206</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>20/20</span>
+                <span class='fraction'>26/26</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>12/16</span>
+                <span class='fraction'>16/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.02% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>189/201</span>
+                <span class='fraction'>206/206</span>
             </div>
         
             
@@ -264,7 +264,12 @@
 <a name='L199'></a><a href='#L199'>199</a>
 <a name='L200'></a><a href='#L200'>200</a>
 <a name='L201'></a><a href='#L201'>201</a>
-<a name='L202'></a><a href='#L202'>202</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -310,20 +315,25 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -510,21 +520,22 @@ export const formatRawCheckItems = (checks: Checks) =&gt; {
     return formattedSortedChecks
 }
 &nbsp;
-export const disableNextChecks = (<span class="fstat-no" title="function not covered" >setActiveCheckIndex: UseStateNumberType, checks: Checks, disableStartingIndex: number) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    for (let i = disableStartingIndex + 1; i &lt; checks.length; i++) {</span>
-<span class="cstat-no" title="statement not covered" >        checks[i].disabled = true</span>
-<span class="cstat-no" title="statement not covered" >        checks[i].answer = null</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    setActiveCheckIndex(disableStartingIndex)</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >}</span></span>
+export const disableFollowingCheckIndexes = (checks: Checks, disableStartingIndex: number) =&gt; {
+    for (let i = disableStartingIndex + 1; i &lt; checks.length; i++) {
+        checks[i].disabled = true
+        checks[i].answer = null
+    }
 &nbsp;
-export const enableNextCheck = (<span class="fstat-no" title="function not covered" >setActiveCheckIndex: UseStateNumberType, checks: Checks, checkIndex: number) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (checkIndex + 1 &lt; checks.length) {</span>
-<span class="cstat-no" title="statement not covered" >        checks[checkIndex + 1].disabled = false</span>
-<span class="cstat-no" title="statement not covered" >        setActiveCheckIndex(activeCheckIdx =&gt; activeCheckIdx + 1)</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >}</span></span>
+    return checks
+}
+&nbsp;
+export const enableNextCheck = (checks: Checks, checkIndex: number) =&gt; {
+    if (checkIndex + 1 &lt; checks.length) {
+        checks[checkIndex + 1].disabled = false
+    }
+&nbsp;
+    return checks
+}
 &nbsp;
 export default function VerificationForm() {
     const [checks, setChecks] = useState&lt;Checks&gt;(() =&gt; [])
@@ -558,9 +569,11 @@ export default function VerificationForm() {
         checksCopy[activeCheckIndex].answer = selectedOption === "yes"
         setChecks(checksCopy)
         if (selectedOption === "yes") {
-            enableNextCheck(setActiveCheckIndex, checksCopy, activeCheckIndex)
+            enableNextCheck(checksCopy, activeCheckIndex)
+            setActiveCheckIndex(activeCheckIdx =&gt; activeCheckIdx + 1)
         } else {
-            disableNextChecks(setActiveCheckIndex, checksCopy, activeCheckIndex)
+            disableFollowingCheckIndexes(checksCopy, activeCheckIndex)
+            setActiveCheckIndex(activeCheckIndex)
         }
     }
 &nbsp;
@@ -612,10 +625,12 @@ export default function VerificationForm() {
         const isNoAnswer = !isYesAnswer
         if (isNoAnswer) {
             // update all the checks after the clicked one to be disabled
-            disableNextChecks(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
+            disableFollowingCheckIndexes(updatedChecksState, clickedElementIndex)
+            setActiveCheckIndex(clickedElementIndex)
         } else {
             // update the next check to be enabled
-            enableNextCheck(setActiveCheckIndex, updatedChecksState, clickedElementIndex)
+            enableNextCheck(updatedChecksState, clickedElementIndex)
+            setActiveCheckIndex(activeCheckIdx =&gt; activeCheckIdx + 1)
         }
         // update the checks with the copy of the checks
         setChecks(updatedChecksState)
@@ -673,7 +688,7 @@ export default function VerificationForm() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2022-11-06T03:56:37.439Z
+                at 2022-11-06T04:53:14.300Z
             </div>
         <script src="../prettify.js"></script>
         <script>

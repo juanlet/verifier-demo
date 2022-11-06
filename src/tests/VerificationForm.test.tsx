@@ -1,4 +1,4 @@
-import { areAllAnswersYes, formatRawCheckItems, getCheckIndexById, haveAtLeastOneNoAnswer, isSubmitDisabled, sortChecksByPriority } from "@/components/VerificationForm"
+import { areAllAnswersYes, disableFollowingCheckIndexes, enableNextCheck, formatRawCheckItems, getCheckIndexById, haveAtLeastOneNoAnswer, isSubmitDisabled, sortChecksByPriority } from "@/components/VerificationForm"
 import { describe, expect, it } from "vitest"
 
 describe('verification form', () => {
@@ -473,6 +473,107 @@ describe('verification form', () => {
             const expected: any[] = []
             const formattedChecks = formatRawCheckItems(rawChecks)
             expect(formattedChecks).toEqual(expected)
+        })
+    })
+
+    describe('disableNextChecks: Disable Next Checks', () => {
+        it('disableNextChecks should disable next checks', () => {
+            const checks = [
+                {
+                    id: "ddd",
+                    priority: 3,
+                    description: "Document data is clearly visible",
+                    answer: true,
+                    disabled: false
+                },
+                {
+                    id: "bbb",
+                    priority: 5,
+                    description: "Veriff supports presented document",
+                    answer: true,
+                    disabled: false
+                },
+                {
+                    id: "ccc",
+                    priority: 7,
+                    description: "Face is clearly visible",
+                    answer: true,
+                    disabled: false
+                }
+            ]
+
+            const expected = [
+                {
+                    id: "ddd",
+                    priority: 3,
+                    description: "Document data is clearly visible",
+                    disabled: false,
+                    answer: true
+                },
+                {
+                    id: "bbb",
+                    priority: 5,
+                    description: "Veriff supports presented document",
+                    disabled: false,
+                    answer: true
+                },
+                {
+                    id: "ccc",
+                    priority: 7,
+                    description: "Face is clearly visible",
+                    disabled: true,
+                    answer: null
+                }
+            ]
+
+            const disableResult = disableFollowingCheckIndexes(checks, 1)
+            expect(disableResult).toEqual(expected)
+        })
+
+        it('disableFollowingCheckIndexes should return empty array if checks is empty', () => {
+            const checks: any[] = []
+            const expected: any[] = []
+            const formattedChecks = disableFollowingCheckIndexes(checks, 0)
+            expect(formattedChecks).toEqual(expected)
+        })
+    })
+
+    describe('enableNextCheck : Enable Next Check', () => {
+        it('enableNextCheck should enable next check', () => {
+            const checks = [
+                {
+                    id: "ddd",
+                    priority: 3,
+                    description: "Document data is clearly visible",
+                    answer: true,
+                    disabled: false
+                },
+                {
+                    id: "bbb",
+                    priority: 5,
+                    description: "Veriff supports presented document",
+                    answer: true,
+                    disabled: true
+                },
+                {
+                    id: "ccc",
+                    priority: 7,
+                    description: "Face is clearly visible",
+                    answer: true,
+                    disabled: true
+                }
+            ]
+
+            const index = 1
+            const enableNextResult = enableNextCheck(checks, index)
+            expect(enableNextResult[index + 1].disabled).toEqual(false)
+        })
+
+        it('enableNextCheck should return empty array if checks is empty', () => {
+            const checks: any[] = []
+            const expected: any[] = []
+            const enableNextResult = enableNextCheck(checks, 0)
+            expect(enableNextResult).toEqual(expected)
         })
     })
 })

@@ -19,8 +19,8 @@ export default function VerificationForm() {
     const moveCursorUp = (e: SyntheticEvent) => {
         e.preventDefault()
         console.log("Hey", activeCheckIndex)
-        if (activeCheckIndex - 1 >= 0) {
-            console.log(activeCheckIndex - 1)
+        const previousCheckIndex = activeCheckIndex - 1
+        if (previousCheckIndex >= 0) {
             setActiveCheckIndex(activeCheckIndex => activeCheckIndex - 1)
         }
     }
@@ -28,7 +28,8 @@ export default function VerificationForm() {
     const moveCursorDown = (e: SyntheticEvent) => {
         e.preventDefault()
         const lastCheckIndex = checks.length - 1
-        if (activeCheckIndex + 1 <= lastCheckIndex && !checks[activeCheckIndex + 1].disabled) {
+        const nextCheckIndex = activeCheckIndex + 1
+        if (nextCheckIndex <= lastCheckIndex && !checks[nextCheckIndex].disabled) {
             setActiveCheckIndex(activeCheckIndex => activeCheckIndex + 1)
         }
     }
@@ -54,7 +55,14 @@ export default function VerificationForm() {
     const completeChecksWithStatusFields = (checks: Checks) => {
         const formattedSortedChecks: Checks = []
         checks.forEach((check, index) => {
-            formattedSortedChecks.push({ id: check.id, description: check.description, disabled: index !== 0, answer: null, priority: check.priority })
+            const formattedCheck = {
+                id: check.id,
+                description: check.description,
+                disabled: index !== 0,
+                answer: null,
+                priority: check.priority
+            }
+            formattedSortedChecks.push(formattedCheck)
         })
         setChecks(formattedSortedChecks)
     }
@@ -124,6 +132,7 @@ export default function VerificationForm() {
     }
 
     const onOptionBtnClickHandler = ({ checkElement, isYesAnswer }: { checkElement: Check, isYesAnswer: boolean }) => {
+        // user clicks on a yes/no option
         const { id } = checkElement
         const clickedElementIndex = getCheckIndexById(checks, id)
         // we copy the checks to avoid mutation
@@ -144,6 +153,13 @@ export default function VerificationForm() {
 
     if (fetchError) {
         return <div className={verificationFormStyles.errorContainer} onClick={() => setFetchError(null)}>{fetchError}<Button disabled={false}>Retry</Button></div>
+    }
+
+    const isSubmitDisabled = (checks: Checks) => {
+        const allAnswersYes = checks.every(field => field.answer === true)
+        const atLeastOneNoAnswer = !checks.some(field => field.answer === false && field.answer !== null)
+        const disableSubmit = !allAnswersYes && atLeastOneNoAnswer
+        return disableSubmit
     }
 
     return (
@@ -170,7 +186,7 @@ export default function VerificationForm() {
                 })}
             </div >
             {submitError ? <div className={verificationFormStyles.ErrorAlert}>{submitError}</div> : null}
-            <div style={{ textAlign: "end" }}><Button type="submit" disabled={!checks.every(field => field.answer === true)}>Submit</Button></div>
+            <div style={{ textAlign: "end" }}><Button type="submit" disabled={isSubmitDisabled(checks)}>Submit</Button></div>
 
         </form >
     )

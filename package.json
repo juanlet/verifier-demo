@@ -2,7 +2,7 @@
   "name": "validations",
   "private": false,
   "version": "1.0.0",
-  "homepage": "https://juanlet.github.io",
+  "homepage": "https://juanlet.github.io/verifier-demo",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

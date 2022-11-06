@@ -6,10 +6,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest --coverage",
+    "test": "NODE_ENV=test vitest --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "cy:open": "cypress open"
+    "cy:open": "cypress open",
+    "test:e2e": "cypress run --headed --browser chrome"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",

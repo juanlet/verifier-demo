@@ -1,6 +1,6 @@
 # Validation Form
 
-This form validates from highest priority to lowest different requirements. The user needs to fullfil all of them for identity validation.
+This form validates from highest priority to lowest different requirements.
 # Live Demo
 
 https://63677a5f0ff40800094bc7f3--deluxe-truffle-9efdb2.netlify.app/

@@ -1,4 +1,4 @@
-.container {
+.Container {
     position: absolute;
     top: 0;
     left: 0;
@@ -11,4 +11,15 @@
     background-color: #2b9277;
     color: #e2e2e2;
     font-weight: bold;
+}
+
+.SuccessMessage {
+    font-size: 0.65rem;
+    text-align: center;
+}
+
+@media screen and (min-width: 768px) {
+    .SuccessMessage {
+        font-size: 1.5rem;
+    }
 }

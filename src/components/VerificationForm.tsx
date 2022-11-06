@@ -10,6 +10,39 @@ import { useKey } from 'react-use'
 
 /* extracted functions from component and exported them and injected the dependencies
 for these to be easily testable. I left them here to be closer to the code but they can be put in a utils file if needed */
+
+export const sortChecksByPriority = (checks: Checks) => {
+    // avoid mutation of the original checks, sort checks by priority in ascending order
+    const checkCopy = [...checks]
+    return checkCopy.sort((a, b) => a.priority - b.priority)
+}
+
+export const getCheckIndexById = (checks: Checks, id: string) => checks.findIndex(check => check.id === id)
+
+export const areAllAnswersYes = (checks: Checks) => checks.length > 0 && checks.every(field => field.answer === true)
+
+export const haveAtLeastOneNoAnswer = (checks: Checks) => checks.length > 0 && !checks.some(field => field.answer === false)
+
+export const isSubmitDisabled = (checks: Checks) => {
+    const disableSubmit = !areAllAnswersYes(checks) && haveAtLeastOneNoAnswer(checks)
+    return disableSubmit
+}
+
+export const formatRawCheckItems = (checks: Checks) => {
+    const formattedSortedChecks: Checks = []
+    checks.forEach((check, index) => {
+        const formattedCheck = {
+            id: check.id,
+            description: check.description,
+            disabled: index !== 0,
+            answer: null,
+            priority: check.priority
+        }
+        formattedSortedChecks.push(formattedCheck)
+    })
+    return formattedSortedChecks
+}
+
 export const disableNextChecks = (setActiveCheckIndex: UseStateNumberType, checks: Checks, disableStartingIndex: number) => {
     for (let i = disableStartingIndex + 1; i < checks.length; i++) {
         checks[i].disabled = true
@@ -25,21 +58,6 @@ export const enableNextCheck = (setActiveCheckIndex: UseStateNumberType, checks:
         setActiveCheckIndex(activeCheckIdx => activeCheckIdx + 1)
     }
 }
-
-export const isSubmitDisabled = (checks: Checks) => {
-    const allAnswersYes = checks.every(field => field.answer === true)
-    const atLeastOneNoAnswer = !checks.some(field => field.answer === false && field.answer !== null)
-    const disableSubmit = !allAnswersYes && atLeastOneNoAnswer
-    return disableSubmit
-}
-
-export const sortChecksByPriority = (checks: Checks) => {
-    // avoid mutation of the original checks, sort checks by priority in ascending order
-    const checkCopy = [...checks]
-    return checkCopy.sort((a, b) => a.priority - b.priority)
-}
-
-export const getCheckIndexById = (checks: Checks, id: string) => checks.findIndex(check => check.id === id)
 
 export default function VerificationForm() {
     const [checks, setChecks] = useState<Checks>(() => [])
@@ -85,20 +103,6 @@ export default function VerificationForm() {
     useKey('1', () => moveCursorToYesNoOption(checks, "yes"), {}, [checks, activeCheckIndex])
     useKey('2', () => moveCursorToYesNoOption(checks, "no"), {}, [checks, activeCheckIndex])
 
-    const formatRawCheckItems = (checks: Checks) => {
-        const formattedSortedChecks: Checks = []
-        checks.forEach((check, index) => {
-            const formattedCheck = {
-                id: check.id,
-                description: check.description,
-                disabled: index !== 0,
-                answer: null,
-                priority: check.priority
-            }
-            formattedSortedChecks.push(formattedCheck)
-        })
-        setChecks(formattedSortedChecks)
-    }
 
     const fetchInitialVerificationData = async () => {
         try {
@@ -106,7 +110,8 @@ export default function VerificationForm() {
             isResponseError(fetchResult)
             const checks = fetchResult as Checks
             const sortedChecks = sortChecksByPriority(checks)
-            formatRawCheckItems(sortedChecks)
+            const formattedChecks = formatRawCheckItems(sortedChecks)
+            setChecks(formattedChecks)
         } catch {
             setFetchError("There was an error with the service. Please wait a few minutes before you try again.")
         }

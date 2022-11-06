@@ -42,10 +42,28 @@ describe('Verification process', () => {
     cy.get('Button[type*="submit"]').should('not.be.disabled')
   })
 
-  it('can submit form when one answer is no', () => {
+  it('can submit form when one answer is no and the congratulation screen is shown and can come back to the app', () => {
     cy.get("#noBtn-0").click()
-    cy.get('Button[type*="submit"]').should('not.be.disabled')
+    cy.get('Button[type*="submit"]').as("submitButton")
+    cy.get("@submitButton").should('not.be.disabled')
+    cy.get("@submitButton").click()
+    cy.contains("Congratulations")
+    cy.get("Button").click()
+    cy.contains("Verification Form")
+  })
 
+
+  it('can use keyboard to move up(up arrow) and down(down arrow) the list of checks and select yes(1) and no(2) options', () => {
+    // move to no, second check should be disabled
+    cy.get("body").type('2')
+    cy.get('#yesBtn-1').should('be.disabled')
+    // move to yes
+    cy.get("body").type('1')
+    cy.get('#yesBtn-1').should('not.be.disabled')
+    // navigate back to the first element
+    cy.get("body").type("{upArrow}")
+    // navigate down to the second element
+    cy.get("body").type("{downArrow}")
   })
 
 })

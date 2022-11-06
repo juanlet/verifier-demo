@@ -28,7 +28,7 @@ export function fetchChecks(): Promise<Checks | FetchError> {
     return new Promise((resolve, reject) =>
         setTimeout(
             () =>
-                Math.random() <= 0.99
+                Math.random() <= 0.9999
                     ? resolve(checkList)
                     : reject({ success: false }),
             500
@@ -40,7 +40,7 @@ export function submitCheckResults(results: Checks): Promise<Checks | FetchError
     return new Promise((resolve, reject) =>
         setTimeout(
             () =>
-                Math.random() <= 0.8 ? resolve(results) : reject({ success: false }),
+                Math.random() <= 0.9999 ? resolve(results) : reject({ success: false }),
             500
         )
     )

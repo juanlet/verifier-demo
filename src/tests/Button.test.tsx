@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { describe, expect, it } from "vitest"
-import Button from '@/components/Button.tsx'
+import Button from '@/components/Button'
 
 describe('Button', () => {
     it('renders a button', () => {

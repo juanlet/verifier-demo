@@ -70,7 +70,6 @@ export default function VerificationForm() {
 
     const moveCursorUp = (e: SyntheticEvent) => {
         e.preventDefault()
-        console.log("Hey", activeCheckIndex)
         const previousCheckIndex = activeCheckIndex - 1
         if (previousCheckIndex >= 0) {
             setActiveCheckIndex(activeCheckIndex => activeCheckIndex - 1)
@@ -87,6 +86,7 @@ export default function VerificationForm() {
     }
 
     const moveCursorToYesNoOption = (checks: Checks, selectedOption: string) => {
+        if (!checks.length) return
         // create a copy of checks array
         const checksCopy = [...checks]
         checksCopy[activeCheckIndex].answer = selectedOption === "yes"
@@ -101,8 +101,8 @@ export default function VerificationForm() {
     }
 
     // setting key listeners for up, down, yes and no to navigate through the checks
-    useKey('ArrowUp', moveCursorUp, {}, [activeCheckIndex])
-    useKey('ArrowDown', moveCursorDown, {}, [activeCheckIndex])
+    useKey('ArrowUp', (moveCursorUp as any), {}, [activeCheckIndex])
+    useKey('ArrowDown', (moveCursorDown as any), {}, [activeCheckIndex])
     useKey('1', () => moveCursorToYesNoOption(checks, "yes"), {}, [checks, activeCheckIndex])
     useKey('2', () => moveCursorToYesNoOption(checks, "no"), {}, [checks, activeCheckIndex])
 

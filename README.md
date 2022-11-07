@@ -1,6 +1,6 @@
 # Validation Form
 
-This form validates from highest priority to lowest different requirements. To navigate through the form and answer the checks with yes or now, use the keyboard keys 1(yes), 2(no), up(up arrow), down(down arrow), or alternatively, use the mouse.
+This form validates from highest priority to lowest different requirements. To navigate the form through down and up the check list, and to answer the checks with YES or NO, use the keyboard keys 1(yes), 2(no), up(up arrow), down(down arrow), or alternatively, use the mouse.
 # Live Demo
 
 https://63677a5f0ff40800094bc7f3--deluxe-truffle-9efdb2.netlify.app/

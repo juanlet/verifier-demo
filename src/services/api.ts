@@ -1,4 +1,4 @@
-import { FetchError } from "@/types/interfaces"
+import { IFetchError } from "@/types/interfaces"
 import { Checks } from "@/types/types"
 
 export const checkList = [
@@ -24,7 +24,7 @@ export const checkList = [
     }
 ]
 
-export function fetchChecks(): Promise<Checks | FetchError> {
+export function fetchChecks(): Promise<Checks | IFetchError> {
     return new Promise((resolve, reject) =>
         setTimeout(
             () =>
@@ -36,7 +36,7 @@ export function fetchChecks(): Promise<Checks | FetchError> {
     )
 }
 
-export function submitCheckResults(results: Checks): Promise<Checks | FetchError> {
+export function submitCheckResults(results: Checks): Promise<Checks | IFetchError> {
     return new Promise((resolve, reject) =>
         setTimeout(
             () =>
@@ -46,7 +46,7 @@ export function submitCheckResults(results: Checks): Promise<Checks | FetchError
     )
 }
 
-export const isResponseError = (checks: Checks | FetchError) => {
+export const isResponseError = (checks: Checks | IFetchError) => {
     // if success property is present in the response as a key, it means there was an error according to the specification of the given API
     if ('success' in checks) {
         throw new Error()

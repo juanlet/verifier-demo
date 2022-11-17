@@ -1,6 +1,6 @@
 import { SyntheticEvent, useEffect, useState } from 'react'
 import { fetchChecks, isResponseError, submitCheckResults } from '@/services/api'
-import { Check, FetchError } from '@/types/interfaces'
+import { IFetchError } from '@/types/interfaces'
 import { Checks } from '@/types/types'
 import Button from '@/components/Button'
 import verificationFormStyles from '@/components/VerificationForm.module.css'
@@ -8,6 +8,7 @@ import '@/components/VerificationForm.module.css'
 import buttonStyles from '@/components/Button.module.css'
 import { useNavigate } from 'react-router-dom'
 import { useKey } from 'react-use'
+import { Check } from '@/classes/Check'
 
 /* extracted functions from component and exported them and injected the dependencies
 for these to be easily testable. I left them here to be closer to the code but they can be put in a utils file if needed */
@@ -32,13 +33,8 @@ export const isSubmitDisabled = (checks: Checks) => {
 export const formatRawCheckItems = (checks: Checks) => {
     const formattedSortedChecks: Checks = []
     checks.forEach((check, index) => {
-        const formattedCheck = {
-            id: check.id,
-            description: check.description,
-            disabled: index !== 0,
-            answer: null,
-            priority: check.priority
-        }
+        const disabled = index !== 0
+        const formattedCheck = new Check(check.id, check.priority, check.description, disabled)
         formattedSortedChecks.push(formattedCheck)
     })
     return formattedSortedChecks
@@ -88,6 +84,7 @@ export default function VerificationForm() {
 
     const moveCursorToYesNoOption = (checks: Checks, selectedOption: string) => {
         if (!checks.length) return
+        if (areAllAnswersYes(checks)) return
         // create a copy of checks array
         const checksCopy = [...checks]
         checksCopy[activeCheckIndex].answer = selectedOption === "yes"
@@ -110,7 +107,7 @@ export default function VerificationForm() {
 
     const fetchInitialVerificationData = async () => {
         try {
-            const fetchResult: Checks | FetchError = await fetchChecks()
+            const fetchResult: Checks | IFetchError = await fetchChecks()
             isResponseError(fetchResult)
             const checks = fetchResult as Checks
             const sortedChecks = sortChecksByPriority(checks)

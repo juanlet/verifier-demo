@@ -2,6 +2,7 @@ import VerificationForm, { areAllAnswersYes, disableFollowingCheckIndexes, enabl
 import { describe, expect, it, vi } from "vitest"
 import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom'
+import { Check } from "@/classes/Check"
 
 vi.mock("react-router-dom", () => {
     return { useNavigate: vi.fn() }
@@ -13,26 +14,10 @@ describe('verification form', () => {
             it('should sort check list by priority', () => {
                 const expectedSortedCheckListIds = ["ddd", "bbb", "ccc", "aaa"]
                 const checkList = [
-                    {
-                        id: "aaa",
-                        priority: 10,
-                        description: "Face on the picture matches face on the document"
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document"
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible"
-                    },
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible"
-                    }
+                    new Check("aaa", 10, "Face on the picture matches face on the document"),
+                    new Check("bbb", 5, "Veriff supports presented document"),
+                    new Check("ccc", 7, "Face is clearly visible"),
+                    new Check("ddd", 3, "Document data is clearly visible")
                 ]
                 const sortedCheckList = sortChecksByPriority(checkList)
                 const sortedCheckListIds = sortedCheckList.map(check => check.id)
@@ -54,26 +39,10 @@ describe('verification form', () => {
                 const checkId = "bbb"
                 const expectedCheckIndex = 1
                 const checkList = [
-                    {
-                        id: "aaa",
-                        priority: 10,
-                        description: "Face on the picture matches face on the document"
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document"
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible"
-                    },
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible"
-                    }
+                    new Check("aaa", 10, "Face on the picture matches face on the document"),
+                    new Check("bbb", 5, "Veriff supports presented document"),
+                    new Check("ccc", 7, "Face is clearly visible"),
+                    new Check("ddd", 3, "Document data is clearly visible")
                 ]
                 const checkIndex = getCheckIndexById(checkList, checkId)
 
@@ -84,26 +53,10 @@ describe('verification form', () => {
                 const checkId = "zzz"
                 const expectedCheckIndex = -1
                 const checkList = [
-                    {
-                        id: "aaa",
-                        priority: 10,
-                        description: "Face on the picture matches face on the document"
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document"
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible"
-                    },
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible"
-                    }
+                    new Check("aaa", 10, "Face on the picture matches face on the document"),
+                    new Check("bbb", 5, "Veriff supports presented document"),
+                    new Check("ccc", 7, "Face is clearly visible"),
+                    new Check("ddd", 3, "Document data is clearly visible")
                 ]
                 const checkIndex = getCheckIndexById(checkList, checkId)
 
@@ -122,30 +75,10 @@ describe('verification form', () => {
         describe('areAllAnswersYes: Are All Answers Yes', () => {
             it('areAllAnswersYes should be true if all answers are yes', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: true
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "aaa",
-                        priority: 10,
-                        description: "Face on the picture matches face on the document",
-                        answer: true
-                    }
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, true),
+                    new Check("ccc", 7, "Face is clearly visible", false, true),
+                    new Check("aaa", 10, "Face on the picture matches face on the document", false, true)
                 ]
                 const expected = true
                 const areAllYes = areAllAnswersYes(checks)
@@ -155,30 +88,9 @@ describe('verification form', () => {
 
             it('areAllAnswersYes should be false if at least one answer is no', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: false
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "aaa",
-                        priority: 10,
-                        description: "Face on the picture matches face on the document",
-                        answer: true
-                    }
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, true),
+                    new Check("ccc", 7, "Face is clearly visible", false, false)
                 ]
                 const expected = false
                 const areAllYes = areAllAnswersYes(checks)
@@ -186,65 +98,11 @@ describe('verification form', () => {
                 expect(areAllYes).toEqual(expected)
             })
 
-            it('areAllAnswersYes should be false if at least one answer is null', () => {
+            it('areAllAnswersYes should be false if at least one answer is unanswered', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: null
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "aaa",
-                        priority: 10,
-                        description: "Face on the picture matches face on the document",
-                        answer: true
-                    }
-                ]
-                const expected = false
-                const areAllYes = areAllAnswersYes(checks)
-
-                expect(areAllYes).toEqual(expected)
-            })
-
-            it('areAllAnswersYes should be false if at least one answer is undefined', () => {
-                const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: undefined
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "aaa",
-                        priority: 10,
-                        description: "Face on the picture matches face on the document",
-                        answer: true
-                    }
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, true),
+                    new Check("ccc", 7, "Face is clearly visible", false)
                 ]
                 const expected = false
                 const areAllYes = areAllAnswersYes(checks)
@@ -264,18 +122,9 @@ describe('verification form', () => {
         describe('haveAtLeastOneNoAnswer: Have At Least One No Answer', () => {
             it('haveAtLeastOneNoAnswer should be true if at least one answer is no', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: false
-                    }]
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, false)
+                ]
 
                 const expected = true
                 const haveAtLeastOneNo = haveAtLeastOneNoAnswer(checks)
@@ -284,18 +133,9 @@ describe('verification form', () => {
 
             it('haveAtLeastOneNoAnswer should be false if all answers are yes', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: true
-                    }]
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, true)
+                ]
 
                 const expected = false
                 const haveAtLeastOneNo = haveAtLeastOneNoAnswer(checks)
@@ -309,40 +149,11 @@ describe('verification form', () => {
                 expect(haveAtLeastOneNo).toEqual(expected)
             })
 
-            it('haveAtLeastOneNoAnswer should be false if all answers are null', () => {
+            it('haveAtLeastOneNoAnswer should be false if all answers are unanswered', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: null
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: null
-                    }]
-
-                const expected = false
-                const haveAtLeastOneNo = haveAtLeastOneNoAnswer(checks)
-                expect(haveAtLeastOneNo).toEqual(expected)
-            })
-
-            it('haveAtLeastOneNoAnswer should be false if all answers are undefined', () => {
-                const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: undefined
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: undefined
-                    }]
+                    new Check("ddd", 3, "Document data is clearly visible", false),
+                    new Check("bbb", 5, "Veriff supports presented document", false)
+                ]
 
                 const expected = false
                 const haveAtLeastOneNo = haveAtLeastOneNoAnswer(checks)
@@ -353,18 +164,9 @@ describe('verification form', () => {
         describe('isSubmitButtonDisabled: Check if Submit Button is Disabled', () => {
             it('isSubmitButtonDisabled should be false if at least one answer is no', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: false
-                    }]
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, false)
+                ]
 
                 const expected = false
                 const isDisabled = isSubmitDisabled(checks)
@@ -373,18 +175,9 @@ describe('verification form', () => {
 
             it('isSubmitButtonDisabled should be false if all answers are yes', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: true
-                    }]
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, true)
+                ]
 
                 const expected = false
                 const isDisabled = isSubmitDisabled(checks)
@@ -398,40 +191,11 @@ describe('verification form', () => {
                 expect(isDisabled).toEqual(expected)
             })
 
-            it('isSubmitButtonDisabled should be true if all answers are null', () => {
+            it('isSubmitButtonDisabled should be true if all answers are unanswered', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: null
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: null
-                    }]
-
-                const expected = true
-                const isDisabled = isSubmitDisabled(checks)
-                expect(isDisabled).toEqual(expected)
-            })
-
-            it('isSubmitButtonDisabled should be true if all answers are undefined', () => {
-                const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: undefined
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: undefined
-                    }]
+                    new Check("ddd", 3, "Document data is clearly visible", false),
+                    new Check("bbb", 5, "Veriff supports presented document", false)
+                ]
 
                 const expected = true
                 const isDisabled = isSubmitDisabled(checks)
@@ -456,23 +220,12 @@ describe('verification form', () => {
                     }]
 
                 const expected = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        disabled: false,
-                        answer: null
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        disabled: true,
-                        description: "Veriff supports presented document",
-                        answer: null
-                    }]
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, false)
+                ]
 
                 const formattedChecks = formatRawCheckItems(rawChecks)
-                expect(formattedChecks).toEqual(expected)
+                expect(formattedChecks.toString()).toBe(expected.toString())
             })
 
             it('formatRawCheckItems should return empty array if raw checks is empty', () => {
@@ -486,55 +239,19 @@ describe('verification form', () => {
         describe('disableNextChecks: Disable Next Checks', () => {
             it('disableNextChecks should disable next checks', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true,
-                        disabled: false
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: true,
-                        disabled: false
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible",
-                        answer: true,
-                        disabled: false
-                    }
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, true),
+                    new Check("ccc", 7, "Face is clearly visible", false, true)
                 ]
 
                 const expected = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        disabled: false,
-                        answer: true
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        disabled: false,
-                        answer: true
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible",
-                        disabled: true,
-                        answer: null
-                    }
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", false, true),
+                    new Check("ccc", 7, "Face is clearly visible", true, true)
                 ]
 
                 const disableResult = disableFollowingCheckIndexes(checks, 1)
-                expect(disableResult).toEqual(expected)
+                expect(disableResult.toString()).toEqual(expected.toString())
             })
 
             it('disableFollowingCheckIndexes should return empty array if checks is empty', () => {
@@ -548,27 +265,9 @@ describe('verification form', () => {
         describe('enableNextCheck : Enable Next Check', () => {
             it('enableNextCheck should enable next check', () => {
                 const checks = [
-                    {
-                        id: "ddd",
-                        priority: 3,
-                        description: "Document data is clearly visible",
-                        answer: true,
-                        disabled: false
-                    },
-                    {
-                        id: "bbb",
-                        priority: 5,
-                        description: "Veriff supports presented document",
-                        answer: true,
-                        disabled: true
-                    },
-                    {
-                        id: "ccc",
-                        priority: 7,
-                        description: "Face is clearly visible",
-                        answer: true,
-                        disabled: true
-                    }
+                    new Check("ddd", 3, "Document data is clearly visible", false, true),
+                    new Check("bbb", 5, "Veriff supports presented document", true, true),
+                    new Check("ccc", 7, "Face is clearly visible", true, true)
                 ]
 
                 const index = 1

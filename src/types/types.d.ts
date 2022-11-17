@@ -1,4 +1,4 @@
-import { Check } from "./interfaces"
+import { Check } from "@/classes/Check"
 
 export type Checks = Check[]
 

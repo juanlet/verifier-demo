@@ -62,6 +62,7 @@ export default function VerificationForm() {
     const [fetchError, setFetchError] = useState<string | null>(null)
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [activeCheckIndex, setActiveCheckIndex] = useState<number>(0)
+
     // list of refs to navigate through the checks and show the active check
     const navigate = useNavigate()
 
@@ -187,7 +188,7 @@ export default function VerificationForm() {
                                      ${activeClass}`
                     return (
                         <div key={id} className={classes} aria-labelledby={description ?? 'Verification field'}>
-                            <h3 className={disabled ? verificationFormStyles.disabledText : ''}>{description}</h3>
+                            <h3 tabIndex={disabled ? "-1" : "0"} className={disabled ? verificationFormStyles.disabledText : ''} aria-labelledby="check-type" style={{ outline: 0 }}>{description}</h3>
                             <div className={verificationFormStyles.ButtonGroup}>
                                 <Button id={`yesBtn-${idx}`} type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })} disabled={disabled} classes={answer ? buttonStyles.ButtonSelected : ''}>Yes</Button>
                                 <Button id={`noBtn-${idx}`} type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: false })} disabled={disabled} classes={answer ? '' : answer !== null ? buttonStyles.ButtonSelected : ''}>No</Button>

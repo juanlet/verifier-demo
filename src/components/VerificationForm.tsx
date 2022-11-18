@@ -188,7 +188,7 @@ export default function VerificationForm() {
                                      ${activeClass}`
                     return (
                         <div key={id} className={classes} aria-labelledby={description ?? 'Verification field'}>
-                            <h3 tabIndex={disabled ? "-1" : "0"} className={disabled ? verificationFormStyles.disabledText : ''} aria-labelledby="check-type" style={{ outline: 0 }}>{description}</h3>
+                            <h3 tabIndex={disabled ? "-1" : "0"} className={disabled ? verificationFormStyles.disabledText : ''} aria-labelledby="check-type">{description}</h3>
                             <div className={verificationFormStyles.ButtonGroup}>
                                 <Button id={`yesBtn-${idx}`} type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: true })} disabled={disabled} classes={answer ? buttonStyles.ButtonSelected : ''}>Yes</Button>
                                 <Button id={`noBtn-${idx}`} type="button" onClick={() => onOptionBtnClickHandler({ checkElement, isYesAnswer: false })} disabled={disabled} classes={answer ? '' : answer !== null ? buttonStyles.ButtonSelected : ''}>No</Button>

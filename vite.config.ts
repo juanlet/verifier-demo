@@ -1,6 +1,7 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import autoprefixer from 'autoprefixer'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,7 +11,12 @@ export default defineConfig({
     environment: 'jsdom'
   },
   css: {
-    devSourcemap: true
+    devSourcemap: true,
+    postcss: {
+      plugins: [
+        autoprefixer({}) // add options if needed
+      ]
+    }
   },
   resolve: {
     alias: [{ find: '@', replacement: '/src' }]

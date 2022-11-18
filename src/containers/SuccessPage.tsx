@@ -8,7 +8,7 @@ export default function SuccessPage() {
         <div className={styles.Container}>
             <h1>Congratulations</h1>
             <div style={{ marginBottom: '1rem' }} className={styles.SuccessMessage}>You have successfully completed the verification process.</div>
-            <Button onClick={() => navigate("/")}>Go back</Button>
+            <Button onClick={() => navigate("/")} autoFocus>Go back</Button>
         </div>
     )
 }

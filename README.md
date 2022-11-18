@@ -29,7 +29,7 @@ npm run test:e2e
 ```
 A new instance of chrome browser will open and the tests will run. 
 
-To configure the domain in which the end to end tests will run, set baseUrl in cypress.config.ts with the domain you used to start the development server. This is the url that cypress will visit during the e2e test runs. Default: http://localhost:5174/
+To configure the domain in which the end to end tests will run, set baseUrl in cypress.config.ts with the domain you used to start the development server. This is the url that cypress will visit during the e2e test runs. Default: http://localhost:3/
 
 Alternatively, you can open Cypress wizard using
 
